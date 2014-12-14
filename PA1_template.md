@@ -89,3 +89,38 @@ As we can see the impact of imputing missing data with this method, on the mean 
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+
+```r
+# Set the locale to English in order not to use the local name days!
+Sys.setlocale("LC_TIME", "English")
+```
+
+```
+## [1] "English_United States.1252"
+```
+
+```r
+# We define a new column "daytype" and we initially we set all values to "weekday"
+complete_data$daytype<-"weekday"
+# We set "daytype" to "weekend" for those rows corresponding to Saturday or Sunday
+complete_data[weekdays(complete_data$date, abbreviate=TRUE) %in% c("Sat", "Sun"), ]$daytype<-"weekend"
+# We convert daytype to factor
+complete_data$daytype<-as.factor(complete_data$daytype)
+
+# We compute the average steps per interval for each daytype
+complete_steps_per_interval <- with(complete_data, aggregate(steps, by=list(daytype, interval), FUN="mean"))
+names(complete_steps_per_interval)<-c("daytype", "interval", "mean_steps")
+
+# We create the plot
+library(lattice)
+xyplot(mean_steps ~ interval | daytype, data = complete_steps_per_interval, layout = c(1, 2), type="l", xlab="Interval", ylab="Number of steps")
+```
+
+![](./PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
+
+From the plots we can see that there are differences in activity patterns between weekdays and weekends. Some conclusions tha we can make about the individuals that took part in the measurements are:
+
+- They wake up later during the weekends (as most of the people)
+
+- During the weekdays they seem to make less steps on average (Maybe most of them are doing office work and are sitting?)
