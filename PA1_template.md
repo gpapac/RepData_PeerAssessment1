@@ -51,7 +51,9 @@ rows_with_na <- sum(is.na(activity_data$steps))
 ```
 
 
-**2304** rows have NA values in the "steps" column
+**2304** rows have NA values in the "steps" column.
+
+We will replace all NA values in the "steps" column with the average of the corresponding interval, accross all days. These averages are already computed above, and stored in a variable.
 
 
 
@@ -64,13 +66,13 @@ library(plyr)
 ```
 
 ```r
-# create a copy of the data
+# We create a copy of the data
 complete_data <-activity_data
-# replace the NA values, with the mean of the corresponding interval (already calculated in: steps_per_interval)
+# We replace the NA values in the "steps" column, with the average steps of the corresponding interval accross all days (already calculated and stored in variable: steps_per_interval)
 # We use join in order to keep the original sorting of the data set
 complete_data[is.na(complete_data$steps),]$steps <- join(complete_data, steps_per_interval, by="interval")[is.na(complete_data$steps),4]
 
-
+# We create an aggregate by date, in order to plot a histogram
 complete_steps_per_day <- with(complete_data, aggregate(steps, by=list(date), FUN="sum"))
 names(complete_steps_per_day) <- c("date", "total_steps")
 hist(complete_steps_per_day$total_steps, main="Histogram of total steps per day (NAs repleaced by interval mean steps)", xlab="Total steps per day", col="orange", breaks=10)

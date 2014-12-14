@@ -84,16 +84,17 @@ max_mean_steps &lt;- round(max(steps_per_interval$steps), 0)</code></pre>
 <div id="imputing-missing-values" class="section level2">
 <h2>Imputing missing values</h2>
 <pre class="r"><code>rows_with_na &lt;- sum(is.na(activity_data$steps))</code></pre>
-<p><strong>2304</strong> rows have NA values in the “steps” column</p>
+<p><strong>2304</strong> rows have NA values in the “steps” column.</p>
+<p>We will replace all NA values in the “steps” column with the average of the corresponding interval, accross all days. These averages are already computed above, and stored in a variable.</p>
 <pre class="r"><code>library(plyr)</code></pre>
 <pre><code>## Warning: package 'plyr' was built under R version 3.1.2</code></pre>
-<pre class="r"><code># create a copy of the data
+<pre class="r"><code># We create a copy of the data
 complete_data &lt;-activity_data
-# replace the NA values, with the mean of the corresponding interval (already calculated in: steps_per_interval)
+# We replace the NA values in the &quot;steps&quot; column, with the average steps of the corresponding interval accross all days (already calculated and stored in variable: steps_per_interval)
 # We use join in order to keep the original sorting of the data set
 complete_data[is.na(complete_data$steps),]$steps &lt;- join(complete_data, steps_per_interval, by=&quot;interval&quot;)[is.na(complete_data$steps),4]
 
-
+# We create an aggregate by date, in order to plot a histogram
 complete_steps_per_day &lt;- with(complete_data, aggregate(steps, by=list(date), FUN=&quot;sum&quot;))
 names(complete_steps_per_day) &lt;- c(&quot;date&quot;, &quot;total_steps&quot;)
 hist(complete_steps_per_day$total_steps, main=&quot;Histogram of total steps per day (NAs repleaced by interval mean steps)&quot;, xlab=&quot;Total steps per day&quot;, col=&quot;orange&quot;, breaks=10)</code></pre>
